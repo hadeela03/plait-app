@@ -755,7 +755,8 @@ def logout():
     return redirect(url_for('home'))
 
 
+with app.app_context():
+    db.create_all()  # this helps create the database tables if they do not exist
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # this helps create the database tables if they do not exist
     app.run(debug=True)
