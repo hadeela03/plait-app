@@ -1,0 +1,62 @@
+<h1>Welcome, {{ current_user.username }}!</h1>
+<img src="{{ current_user.avatar_url() }}" alt="Your avatar" style="width: 64px; border-radius: 50%;">
+<br>
+<a href="{{ url_for('upload_avatar') }}">Change Profile Picture</a>
+<br>
+<a href="{{ url_for('users') }}">Find Friends</a>
+
+<h2>
+  Pending Friend Requests
+  {% if pending_request_count > 0 %}
+    <span style="color: white; background: red; border-radius: 50%; padding: 2px 8px; font-size: 14px;">{{ pending_request_count }}</span>
+  {% endif %}
+</h2>
+{% if pending_requests %}
+  <ul>
+    {% for req in pending_requests %}
+      <li>
+        <img src="{{ req.sender.avatar_url() }}" alt="{{ req.sender.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
+        {{ req.sender.username }}
+        <form action="{{ url_for('accept_friend_request', request_id=req.id) }}" method="POST" style="display:inline;">
+          <button type="submit">Accept</button>
+        </form>
+        <form action="{{ url_for('decline_friend_request', request_id=req.id) }}" method="POST" style="display:inline;">
+          <button type="submit">Decline</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No pending requests.</p>
+{% endif %}
+
+<h2>Your Friends</h2>
+{% if friends %}
+  <ul>
+    {% for friend in friends %}
+      <li>
+        <img src="{{ friend.avatar_url() }}" alt="{{ friend.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
+        {{ friend.username }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You haven't added any friends yet.</p>
+{% endif %}
+
+<a href="{{ url_for('calendar') }}">My Travel Calendar 🗓️</a>
+<a href="{{ url_for('my_photos') }}">My Photos 📷</a>
+
+<h2>Your Groups</h2>
+<a href="{{ url_for('create_group') }}">Create a New Group</a>
+{% if my_groups %}
+  <ul>
+    {% for group in my_groups %}
+      <li><a href="{{ url_for('view_group', group_id=group.id) }}">{{ group.name }}</a> ({{ group.country }})</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You're not in any groups yet.</p>
+{% endif %}
+
+<a href="{{ url_for('logout') }}">Log Out</a>

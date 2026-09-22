@@ -1,0 +1,20 @@
+<h1>My Photos 📷</h1>
+
+{% if photos %}
+  <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+    {% for photo in photos %}
+      <div style="width: 200px;">
+        <img src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" style="width: 100%; border-radius: 8px;">
+        {% if photo.caption %}
+          <p>{{ photo.caption }}</p>
+        {% endif %}
+        <small>{{ photo.group.name }} ({{ photo.group.country }}) — by {{ photo.uploader.username }}</small><br>
+        <small>{{ photo.timestamp.strftime('%b %d, %Y') }}</small>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No photos yet — join a group and start sharing memories!</p>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>

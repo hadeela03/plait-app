@@ -1,0 +1,29 @@
+<h1>{{ group.name }} — Trip Album</h1>
+<p>Destination: {{ group.country }}</p>
+
+<form method="POST" action="{{ url_for('upload_group_photo', group_id=group.id) }}" enctype="multipart/form-data">
+  <input type="file" name="photo" accept="image/*" required>
+  <input type="text" name="caption" placeholder="Add a caption (optional)">
+  <button type="submit">Add Photo</button>
+</form>
+
+<hr>
+
+{% if photos %}
+  <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+    {% for photo in photos %}
+      <div style="width: 200px;">
+        <img src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" style="width: 100%; border-radius: 8px;">
+        {% if photo.caption %}
+          <p>{{ photo.caption }}</p>
+        {% endif %}
+        <small>By {{ photo.uploader.username }} — {{ photo.timestamp.strftime('%b %d, %Y') }}</small>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No photos yet — be the first to add one!</p>
+{% endif %}
+
+<br>
+<a href="{{ url_for('view_group', group_id=group.id) }}">Back to Group</a>

@@ -1,0 +1,44 @@
+<h1>My Travel Calendar 🗓️</h1>
+
+<h2>Upcoming Trips</h2>
+{% if upcoming_trips %}
+  {% for item in upcoming_trips %}
+    <div style="border: 2px solid #4a90d9; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+      <h3>{{ item.group.name }} — {{ item.group.country }}</h3>
+      <p><strong>{{ item.trip.start_date.strftime('%b %d, %Y') }} — {{ item.trip.end_date.strftime('%b %d, %Y') }}</strong></p>
+      <a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">View / Edit Full Itinerary</a>
+
+      <div style="margin-top: 10px;">
+        {% for day in item.days %}
+          <div style="padding: 8px; border-bottom: 1px solid #eee; {% if day.date == today %}background: #fff3cd;{% endif %}">
+            <strong>{{ day.date.strftime('%A, %b %d') }}</strong>
+            {% if day.date == today %}<span style="color: #d9822b;"> (Today)</span>{% endif %}
+            <br>
+            {% if day.activity %}
+              {{ day.activity }}
+            {% else %}
+              <em>Nothing planned yet</em>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No upcoming trips yet. Confirm dates in a group to see it here!</p>
+{% endif %}
+
+<h2>Past Trips</h2>
+{% if past_trips %}
+  {% for item in past_trips %}
+    <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 15px; opacity: 0.7;">
+      <h3>{{ item.group.name }} — {{ item.group.country }}</h3>
+      <p>{{ item.trip.start_date.strftime('%b %d, %Y') }} — {{ item.trip.end_date.strftime('%b %d, %Y') }}</p>
+      <a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">View Itinerary</a>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No past trips yet.</p>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>

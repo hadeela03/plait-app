@@ -1,0 +1,25 @@
+<h1>{{ group.name }} — Itinerary</h1>
+<p>Destination: {{ group.country }}</p>
+
+{% if trip %}
+  <p><strong>Trip dates:</strong> {{ trip.start_date.strftime('%b %d, %Y') }} — {{ trip.end_date.strftime('%b %d, %Y') }}</p>
+  <a href="{{ url_for('set_trip_dates', group_id=group.id) }}">Change Dates</a>
+
+  <div style="margin-top: 20px;">
+    {% for day in days %}
+      <div style="border: 1px solid #ccc; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+        <h3>{{ day.date.strftime('%A, %b %d, %Y') }}</h3>
+        <form method="POST" action="{{ url_for('update_itinerary_day', day_id=day.id) }}">
+          <textarea name="activity" rows="3" style="width: 100%;" placeholder="What's planned for this day?">{{ day.activity or '' }}</textarea><br>
+          <button type="submit">Save</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No trip dates set yet.</p>
+  <a href="{{ url_for('set_trip_dates', group_id=group.id) }}">Confirm Trip Dates</a>
+{% endif %}
+
+<br>
+<a href="{{ url_for('view_group', group_id=group.id) }}">Back to Group</a>

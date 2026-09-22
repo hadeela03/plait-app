@@ -1,0 +1,12 @@
+<h1>Confirm Trip Dates — {{ group.name }}</h1>
+<p>Destination: {{ group.country }}</p>
+
+<form method="POST">
+  <label>Start Date:</label>
+  <input type="date" name="start_date" required><br><br>
+  <label>End Date:</label>
+  <input type="date" name="end_date" required><br><br>
+  <button type="submit">Confirm Dates</button>
+</form>
+
+<a href="{{ url_for('view_group', group_id=group.id) }}">Back to Group</a>

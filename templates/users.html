@@ -1,0 +1,31 @@
+<h1>Find Friends</h1>
+
+<form method="GET" action="{{ url_for('users') }}">
+  <input type="text" name="search" placeholder="Search by username" value="{{ search_query }}">
+  <button type="submit">Search</button>
+</form>
+
+{% if search_query %}
+  {% if results %}
+    <ul>
+      {% for user in results %}
+        <li>
+          {{ user.username }}
+          {% if user.id in friend_ids %}
+            <span>(Already friends)</span>
+          {% elif user.id in pending_ids %}
+            <span>(Request pending)</span>
+          {% else %}
+            <form action="{{ url_for('send_friend_request', receiver_id=user.id) }}" method="POST" style="display:inline;">
+              <button type="submit">Send Friend Request</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No users found matching "{{ search_query }}".</p>
+  {% endif %}
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
