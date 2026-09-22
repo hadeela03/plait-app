@@ -126,6 +126,8 @@ class GroupPhoto(db.Model):
     group = db.relationship('Group', foreign_keys=[group_id], backref='photos')
     uploader = db.relationship('User', foreign_keys=[uploader_id])
 
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(GROUP_PHOTO_FOLDER, exist_ok=True)
 
 # --- Trip model (confirmed dates for a group's trip) ---
 class Trip(db.Model):
