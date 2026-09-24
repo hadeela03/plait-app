@@ -1,9 +1,30 @@
-<h2>Log In</h2>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}<p>{{ messages[0] }}</p>{% endif %}
-{% endwith %}
-<form method="POST">
-  <input type="email" name="email" placeholder="Email" required><br>
-  <input type="password" name="password" placeholder="Password" required><br>
-  <button type="submit">Log In</button>
-</form>
+{% extends "base.html" %}
+{% block title %}Log In — PlanIt{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-illustration">
+    <div class="cloud cloud1">☁️</div>
+    <div class="cloud cloud2">☁️</div>
+    <div class="plane">✈️</div>
+    <h1>Welcome back<br>to PlanIt!</h1>
+    <div class="globe"></div>
+  </div>
+  <div class="auth-card-wrap">
+    <div class="auth-card">
+      <h2>Log In</h2>
+      <form method="POST">
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" name="password" required>
+        </div>
+        <button type="submit" class="btn-primary">Log In</button>
+      </form>
+      <p class="auth-switch">Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

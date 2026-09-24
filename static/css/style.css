@@ -1,0 +1,220 @@
+:root {
+  --cream: #fdf8ef;
+  --card: #ffffff;
+  --blue: #2f7dd8;
+  --blue-dark: #235fb0;
+  --navy: #1b3a5c;
+  --muted: #7488a0;
+  --border: #e7e1d0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.navbar .logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.5rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.navbar nav a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.navbar nav a:hover { color: var(--blue); }
+
+/* Flash messages */
+.flash-messages {
+  max-width: 500px;
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+.flash-messages p {
+  background: #eaf2ff;
+  color: var(--blue-dark);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Auth pages (login/signup) */
+.auth-page {
+  display: flex;
+  min-height: calc(100vh - 76px);
+  flex-wrap: wrap;
+}
+
+.auth-illustration {
+  flex: 1 1 400px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.auth-illustration h1 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.6rem;
+  color: var(--navy);
+  margin: 0;
+  line-height: 1.2;
+  z-index: 2;
+}
+
+.brand-mark {
+  font-size: 3.2rem !important;
+  color: var(--blue) !important;
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-top: 8px;
+  z-index: 2;
+}
+
+.cloud {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.8;
+}
+.cloud1 { top: 20px; left: 40px; }
+.cloud2 { top: 60px; right: 60px; }
+
+.plane {
+  position: absolute;
+  top: 30px;
+  right: 100px;
+  font-size: 1.8rem;
+  transform: rotate(20deg);
+}
+
+.globe {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #eaf4ff, #bfe0ff 40%, #8fc9f7 100%);
+  position: absolute;
+  bottom: -60px;
+  left: 50px;
+  box-shadow: inset -18px -18px 36px rgba(20, 40, 80, 0.1);
+  overflow: hidden;
+}
+.globe::before, .globe::after {
+  content: "";
+  position: absolute;
+  background: #8fd19e;
+  border-radius: 50% 40% 60% 50%;
+}
+.globe::before { width: 80px; height: 60px; top: 40px; left: 30px; transform: rotate(-10deg); }
+.globe::after { width: 60px; height: 80px; bottom: 30px; right: 25px; transform: rotate(15deg); }
+
+.auth-card-wrap {
+  flex: 1 1 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.auth-card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 10px 30px rgba(20, 40, 80, 0.08);
+}
+
+.auth-card h2 {
+  font-family: 'Baloo 2', cursive;
+  margin-top: 0;
+  color: var(--navy);
+}
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f7f9fc;
+  font-size: 0.95rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: #fff;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-primary:hover { background: var(--blue-dark); }
+
+.auth-switch {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.auth-switch a { color: var(--blue); font-weight: 700; text-decoration: none; }
+
+@media (max-width: 700px) {
+  .navbar { justify-content: center; text-align: center; }
+  .auth-illustration { text-align: center; padding: 40px 24px; align-items: center; }
+  .globe { position: static; margin: 24px auto 0; }
+  .plane, .cloud { display: none; }
+}
