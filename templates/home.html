@@ -1,50 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plait — Plan trips together</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-
 <body class="landing-body">
     <main class="landing-page">
-        <section class="landing-content">
-            <!-- World map illustration -->
-            <div class="map-container">
-                <img
-                    class="world-map"
-                    src="{{ url_for('static', filename='world-map.png') }}"
-                    alt="Illustrated world map with travel routes"
-                >
-
-                <!-- Brand name layered over the map -->
-                <h1 class="landing-logo">PLAIT</h1>
-            </div>
-
-            <p class="landing-tagline">
-                More trips, more memories.
-            </p>
-
-            <!-- Existing Flask routes -->
+        <section class="landing-content" aria-label="Welcome to Plait">
             <div class="landing-buttons">
-                <a class="landing-button"
-                   href="{{ url_for('signup') }}">
-                    Sign Up
-                </a>
-
-                <a class="landing-button"
-                   href="{{ url_for('login') }}">
-                    Login
-                </a>
+                <a class="landing-button" href="{{ url_for('signup') }}">Sign Up</a>
+                <a class="landing-button" href="{{ url_for('login') }}">Login</a>
             </div>
         </section>
     </main>
