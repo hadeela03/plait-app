@@ -337,6 +337,14 @@ body {
     outline: 3px solid #222;
     outline-offset: 4px;
 }
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background: url("/static/images/ sign-log.png") no-repeat center center fixed;
+  background-size: cover;+
+  
+  color: var(--navy);
+}
 
 /* Mobile adjustments */
 @media (max-width: 480px) {
