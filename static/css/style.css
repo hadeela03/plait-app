@@ -405,7 +405,7 @@ body {
 
 .landing-buttons {
     position: absolute;
-    top: 82vh;
+    top: 74vh;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -452,7 +452,7 @@ body {
     }
 
     .landing-buttons {
-        top: 82vh;
+        top: 74vh;
         gap: clamp(18px, 7vw, 40px);
     }
 
