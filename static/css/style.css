@@ -218,3 +218,156 @@ body {
   .globe { position: static; margin: 24px auto 0; }
   .plane, .cloud { display: none; }
 }
+
+
+/* ==============================
+   PLAIT LANDING PAGE
+   ============================== */
+
+.landing-body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    color: #080808;
+
+    /* Your saved background image */
+    background-image: url("/static/background.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.landing-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    padding: 12px 20px 40px;
+}
+
+.landing-content {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Map and logo */
+.map-container {
+    position: relative;
+    width: min(100%, 440px);
+    aspect-ratio: 1 / 0.78;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.world-map {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Large black PLAIT lettering */
+.landing-logo {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+
+    font-size: clamp(3.5rem, 13vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -5px;
+    color: #050505;
+    z-index: 2;
+}
+
+/* Short travel tagline */
+.landing-tagline {
+    margin: -2px 0 14px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #111;
+}
+
+/* Yellow buttons beneath the map */
+.landing-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 66px;
+    width: 100%;
+    margin-top: 2px;
+}
+
+.landing-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 118px;
+    min-height: 42px;
+    padding: 10px 18px;
+
+    border-radius: 30px;
+    background: #f0cc4b;
+    color: #111;
+    text-decoration: none;
+
+    font-size: 0.95rem;
+    font-weight: 900;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.landing-button:hover {
+    background: #e6bb30;
+    transform: translateY(-2px);
+}
+
+.landing-button:focus-visible {
+    outline: 3px solid #222;
+    outline-offset: 4px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .landing-page {
+        padding: 24px 14px 32px;
+    }
+
+    .map-container {
+        width: 100%;
+        max-width: 380px;
+    }
+
+    .landing-logo {
+        font-size: clamp(3rem, 14vw, 4.5rem);
+        letter-spacing: -3px;
+    }
+
+    .landing-buttons {
+        gap: clamp(20px, 9vw, 48px);
+    }
+
+    .landing-button {
+        width: 112px;
+        min-height: 40px;
+    }
+
+    .landing-tagline {
+        font-size: 0.82rem;
+    }
+
+    .landing-body {
+        background-attachment: scroll;
+    }
+}
