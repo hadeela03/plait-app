@@ -43,6 +43,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     profile_pic = db.Column(db.String(200), nullable=True)
+    date_of_birth = db.Column(db.String(10), nullable=True)
+    gender = db.Column(db.String(30), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -712,6 +714,77 @@ def dashboard():
     )
 
 
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        action = request.form.get('action', 'save_details')
+
+        if action == 'change_password':
+            current_password = request.form.get('current_password', '')
+            new_password = request.form.get('new_password', '')
+            confirm_password = request.form.get('confirm_password', '')
+
+            if not current_user.check_password(current_password):
+                flash('Your current password is incorrect.')
+                return redirect(url_for('profile'))
+
+            if len(new_password) < 8:
+                flash('Your new password must be at least 8 characters long.')
+                return redirect(url_for('profile'))
+
+            if new_password != confirm_password:
+                flash('The new passwords do not match.')
+                return redirect(url_for('profile'))
+
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Your password has been changed.')
+            return redirect(url_for('profile'))
+
+        email = request.form.get('email', '').strip().lower()
+        date_of_birth = request.form.get('date_of_birth', '').strip() or None
+        gender = request.form.get('gender', '').strip() or None
+
+        if not email:
+            flash('Email address is required.')
+            return redirect(url_for('profile'))
+
+        existing_email = User.query.filter(
+            User.email == email,
+            User.id != current_user.id
+        ).first()
+        if existing_email:
+            flash('That email address is already in use.')
+            return redirect(url_for('profile'))
+
+        if date_of_birth:
+            try:
+                dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+                if dob > datetime.now().date():
+                    flash('Date of birth cannot be in the future.')
+                    return redirect(url_for('profile'))
+            except ValueError:
+                flash('Please enter a valid date of birth.')
+                return redirect(url_for('profile'))
+
+        if gender and gender not in {'Woman', 'Man', 'Non-binary', 'Prefer not to say', 'Self-describe'}:
+            flash('Please choose a valid gender option.')
+            return redirect(url_for('profile'))
+
+        current_user.email = email
+        current_user.date_of_birth = date_of_birth
+        current_user.gender = gender
+        db.session.commit()
+
+        flash('Your account details have been saved.')
+        return redirect(url_for('profile'))
+
+    return render_template('profile.html')
+
+
 @app.route('/upload-avatar', methods=['GET', 'POST'])
 @login_required
 def upload_avatar():
@@ -758,7 +831,16 @@ def logout():
 
 
 with app.app_context():
-    db.create_all()  # this helps create the database tables if they do not exist
+    db.create_all()  # create any missing tables
+
+    # Add profile fields to existing SQLite databases as well as new ones.
+    from sqlalchemy import inspect, text
+    user_columns = {column['name'] for column in inspect(db.engine).get_columns('user')}
+    with db.engine.begin() as connection:
+        if 'date_of_birth' not in user_columns:
+            connection.execute(text('ALTER TABLE user ADD COLUMN date_of_birth VARCHAR(10)'))
+        if 'gender' not in user_columns:
+            connection.execute(text('ALTER TABLE user ADD COLUMN gender VARCHAR(30)'))
 
 if __name__ == '__main__':
     app.run(debug=True)
