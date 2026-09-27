@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plait — My Groups</title>
+  <title>PlanIt — My Groups</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,7 +109,7 @@
         {% if notifications %}
           <div class="notification-list">
             {% for notification in notifications %}
-              <a class="notification-item {% if not notification.is_read %}is-unread{% endif %}" href="{{ notification.link or '#notifications' }}">
+              <div class="notification-item {% if not notification.is_read %}is-unread{% endif %}">
                 <div class="notification-icon notification-icon-{{ notification.notification_type }}" aria-hidden="true">
                   {% if notification.notification_type == 'friend_request' %}♧
                   {% elif notification.notification_type == 'group_added' %}✈
@@ -119,8 +119,18 @@
                   <strong>{{ notification.message }}</strong>
                   <span>{{ notification.timestamp.strftime('%d %b · %H:%M') }}</span>
                 </div>
+                {% if notification.notification_type == 'friend_request' and notification.actor %}
+                  <div class="notification-actions">
+                    <form action="{{ url_for('accept_friend_request', request_id=notification.actor.sent_requests|selectattr('receiver_id', 'equalto', current_user.id)|selectattr('status', 'equalto', 'pending')|map(attribute='id')|first) }}" method="POST">
+                      <button type="submit" class="notification-accept">Follow back</button>
+                    </form>
+                    <form action="{{ url_for('decline_friend_request', request_id=notification.actor.sent_requests|selectattr('receiver_id', 'equalto', current_user.id)|selectattr('status', 'equalto', 'pending')|map(attribute='id')|first) }}" method="POST">
+                      <button type="submit" class="notification-decline">Decline</button>
+                    </form>
+                  </div>
+                {% endif %}
                 {% if not notification.is_read %}<span class="notification-unread-dot" aria-label="Unread"></span>{% endif %}
-              </a>
+              </div>
             {% endfor %}
           </div>
         {% else %}
@@ -152,7 +162,7 @@
     </section>
 
     <footer class="dashboard-footer">
-      <span>PLAIT · PLAN THE TRIP, KEEP THE MEMORIES</span>
+      <span>PLANIT · PLAN THE TRIP, KEEP THE MEMORIES</span>
       <a href="{{ url_for('upload_avatar') }}">Edit profile</a>
     </footer>
   </section>
