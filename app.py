@@ -577,7 +577,7 @@ def upload_group_photo(group_id):
     file = request.files.get('photo')
     caption = request.form.get('caption', '').strip()
 
-    if not file or file.filename == '':
+    if not file or not file.filename:
         flash('No file selected.')
         return redirect(url_for('view_album', group_id=group_id))
 
@@ -586,35 +586,50 @@ def upload_group_photo(group_id):
         return redirect(url_for('view_album', group_id=group_id))
 
     safe_name = secure_filename(file.filename)
+    if not safe_name or '.' not in safe_name:
+        flash('Invalid image filename.')
+        return redirect(url_for('view_album', group_id=group_id))
+
     extension = safe_name.rsplit('.', 1)[1].lower()
     filename = f'{group_id}_{current_user.id}_{uuid.uuid4().hex[:12]}.{extension}'
     filepath = os.path.join(app.config['GROUP_PHOTO_FOLDER'], filename)
 
     try:
+        os.makedirs(app.config['GROUP_PHOTO_FOLDER'], exist_ok=True)
         file.save(filepath)
-    except OSError:
-        flash('The photo could not be saved. Please try a smaller image (under 10 MB).')
-        return redirect(url_for('view_album', group_id=group_id))
 
-    new_photo = GroupPhoto(
-        group_id=group_id,
-        uploader_id=current_user.id,
-        filename=filename,
-        caption=caption
-    )
-    db.session.add(new_photo)
-    member_ids = {
-        membership.user_id
-        for membership in Membership.query.filter_by(group_id=group_id).all()
-        if membership.user_id != current_user.id
-    }
-    for member_id in member_ids:
-        create_notification(
-            member_id, 'photo_added',
-            f'{current_user.username} added a new photo to {group.name}.',
-            actor_id=current_user.id, link=url_for('view_group', group_id=group_id)
+        new_photo = GroupPhoto(
+            group_id=group_id,
+            uploader_id=current_user.id,
+            filename=filename,
+            caption=caption
         )
-    db.session.commit()
+        db.session.add(new_photo)
+
+        group = Group.query.get(group_id)
+        member_ids = {
+            membership.user_id
+            for membership in Membership.query.filter_by(group_id=group_id).all()
+            if membership.user_id != current_user.id
+        }
+        for member_id in member_ids:
+            create_notification(
+                member_id, 'photo_added',
+                f'{current_user.username} added a new photo to {group.name}.',
+                actor_id=current_user.id, link=url_for('view_group', group_id=group_id)
+            )
+
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        try:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        except OSError:
+            pass
+        print(f"GROUP PHOTO UPLOAD ERROR: {e}")
+        flash('The photo could not be uploaded. Please try a JPG or PNG image under 10 MB.')
+        return redirect(url_for('view_album', group_id=group_id))
 
     flash('Photo added to the album!')
     return redirect(url_for('view_album', group_id=group_id))
@@ -622,8 +637,11 @@ def upload_group_photo(group_id):
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
+    group_id = request.view_args.get('group_id') if request.view_args else None
     flash('That image is too large. Please choose a photo under 10 MB.')
-    return redirect(url_for('view_album', group_id=request.view_args.get('group_id', 1)) if request.view_args else url_for('dashboard'))
+    if group_id:
+        return redirect(url_for('view_album', group_id=group_id))
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/group/<int:group_id>/album')
