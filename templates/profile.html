@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}My Profile · Plait{% endblock %}
+{% block content %}
+<main class="profile-page">
+  <a class="profile-back-link" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+
+  <section class="profile-layout">
+    <aside class="profile-identity-card">
+      <div class="profile-cover-art" aria-hidden="true"><span>✦</span><span>✈</span><span>✧</span></div>
+      <img class="profile-large-avatar" src="{{ current_user.avatar_url() }}" alt="{{ current_user.username }}'s profile picture">
+      <h1>{{ current_user.username }}</h1>
+      <p class="profile-handle">Your Plait account</p>
+      <a class="profile-change-photo" href="{{ url_for('upload_avatar') }}">Change profile picture <span aria-hidden="true">↗</span></a>
+      <div class="profile-identity-note">
+        <span class="profile-note-icon">♡</span>
+        <p>Your account, your memories. Keep your details up to date.</p>
+      </div>
+    </aside>
+
+    <div class="profile-settings-column">
+      <section class="profile-settings-card">
+        <div class="profile-section-heading">
+          <div>
+            <p class="profile-eyebrow">PERSONAL INFORMATION</p>
+            <h2>Account details</h2>
+            <p>Update the details connected to your account.</p>
+          </div>
+          <span class="profile-section-icon" aria-hidden="true">✎</span>
+        </div>
+
+        <form class="profile-form" method="POST" action="{{ url_for('profile') }}">
+          <input type="hidden" name="action" value="save_details">
+
+          <label for="profile-username">Username</label>
+          <input id="profile-username" type="text" value="{{ current_user.username }}" readonly>
+          <small class="profile-field-hint">Your username is shown to your friends.</small>
+
+          <label for="profile-email">Email address</label>
+          <input id="profile-email" type="email" name="email" value="{{ current_user.email }}" autocomplete="email" required>
+
+          <div class="profile-form-row">
+            <div>
+              <label for="profile-dob">Date of birth</label>
+              <input id="profile-dob" type="date" name="date_of_birth" value="{{ current_user.date_of_birth or '' }}" max="{{ now_date }}">
+            </div>
+            <div>
+              <label for="profile-gender">Gender</label>
+              <select id="profile-gender" name="gender">
+                <option value="" {% if not current_user.gender %}selected{% endif %}>Choose an option</option>
+                {% for option in ['Woman', 'Man', 'Non-binary', 'Prefer not to say', 'Self-describe'] %}
+                  <option value="{{ option }}" {% if current_user.gender == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <button class="profile-save-button" type="submit">Save account details <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="profile-settings-card password-settings-card">
+        <div class="profile-section-heading">
+          <div>
+            <p class="profile-eyebrow">ACCOUNT SECURITY</p>
+            <h2>Change password</h2>
+            <p>Choose a strong password you don't use elsewhere.</p>
+          </div>
+          <span class="profile-section-icon" aria-hidden="true">⌑</span>
+        </div>
+
+        <form class="profile-form" method="POST" action="{{ url_for('profile') }}">
+          <input type="hidden" name="action" value="change_password">
+
+          <label for="current-password">Current password</label>
+          <input id="current-password" type="password" name="current_password" autocomplete="current-password" required>
+
+          <label for="new-password">New password</label>
+          <input id="new-password" type="password" name="new_password" minlength="8" autocomplete="new-password" required>
+          <small class="profile-field-hint">Use at least 8 characters.</small>
+
+          <label for="confirm-password">Confirm new password</label>
+          <input id="confirm-password" type="password" name="confirm_password" minlength="8" autocomplete="new-password" required>
+
+          <button class="profile-save-button secondary" type="submit">Update password <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+    </div>
+  </section>
+</main>
+{% endblock %}
