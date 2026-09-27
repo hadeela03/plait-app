@@ -1287,3 +1287,13 @@ body.dashboard-body {
     background-position: center top;
   }
 }
+
+
+/* Prefer dashboard.png when it exists; fall back to the existing background.png. */
+body.dashboard-body {
+  background-image: url("/static/dashboard.png"), url("/static/background.png");
+}
+
+.dashboard-main::before {
+  background-image: url("/static/dashboard.png"), url("/static/background.png");
+}
