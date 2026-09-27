@@ -1192,3 +1192,98 @@ body {
   .create-group-button,
   .nav-link { transition: none; }
 }
+
+
+/* DASHBOARD FIX: these rules are intentionally last so the dashboard
+   keeps its own stylesheet, background, and navigation styling. */
+html, body.dashboard-body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body.dashboard-body {
+  font-family: 'Nunito', sans-serif;
+  color: #172b3a;
+  background-color: #eef7f8;
+  background-image: url("/static/dashboard.png");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.dashboard-nav {
+  width: 100%;
+  min-height: 68px;
+  box-sizing: border-box;
+  background: rgba(220, 244, 246, 0.97);
+}
+
+.dashboard-links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.dashboard-main {
+  background: transparent;
+}
+
+.dashboard-main::before {
+  background-image: url("/static/dashboard.png");
+  background-size: cover;
+  background-position: center top;
+  opacity: 1;
+}
+
+.dashboard-main::after {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.72) 0%,
+    rgba(255,255,255,0.58) 45%,
+    rgba(255,255,255,0.24) 100%
+  );
+}
+
+@media (max-width: 700px) {
+  body.dashboard-body {
+    background-attachment: scroll;
+    background-position: center top;
+  }
+
+  .dashboard-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 10px 14px;
+  }
+
+  .dashboard-links {
+    flex: 1 1 calc(100% - 60px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 2px 18px;
+  }
+
+  .nav-link {
+    min-height: 34px;
+    font-size: 0.86rem;
+  }
+
+  .nav-link.active::after {
+    bottom: -1px;
+  }
+
+  .dashboard-main::before {
+    background-position: center top;
+  }
+}
