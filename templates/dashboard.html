@@ -1,62 +1,147 @@
-<h1>Welcome, {{ current_user.username }}!</h1>
-<img src="{{ current_user.avatar_url() }}" alt="Your avatar" style="width: 64px; border-radius: 50%;">
-<br>
-<a href="{{ url_for('upload_avatar') }}">Change Profile Picture</a>
-<br>
-<a href="{{ url_for('users') }}">Find Friends</a>
+<main class="dashboard-shell">
+  <header class="dashboard-nav">
+    <a class="profile-link" href="{{ url_for('upload_avatar') }}" aria-label="Change profile picture">
+      <img src="{{ current_user.avatar_url() }}" alt="{{ current_user.username }}'s profile picture">
+    </a>
 
-<h2>
-  Pending Friend Requests
-  {% if pending_request_count > 0 %}
-    <span style="color: white; background: red; border-radius: 50%; padding: 2px 8px; font-size: 14px;">{{ pending_request_count }}</span>
-  {% endif %}
-</h2>
-{% if pending_requests %}
-  <ul>
-    {% for req in pending_requests %}
-      <li>
-        <img src="{{ req.sender.avatar_url() }}" alt="{{ req.sender.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
-        {{ req.sender.username }}
-        <form action="{{ url_for('accept_friend_request', request_id=req.id) }}" method="POST" style="display:inline;">
-          <button type="submit">Accept</button>
-        </form>
-        <form action="{{ url_for('decline_friend_request', request_id=req.id) }}" method="POST" style="display:inline;">
-          <button type="submit">Decline</button>
-        </form>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No pending requests.</p>
-{% endif %}
+    <nav class="dashboard-links" aria-label="Main navigation">
+      <a class="nav-link active" href="{{ url_for('dashboard') }}">Home</a>
+      <a class="nav-link" href="{{ url_for('my_photos') }}">Album</a>
+      <a class="nav-link" href="{{ url_for('calendar') }}">Calendar</a>
+      <a class="nav-link notification-link" href="#notifications">
+        Notification
+        {% if pending_request_count > 0 %}
+          <span class="notification-count">{{ pending_request_count }}</span>
+        {% endif %}
+      </a>
+      <a class="nav-link" href="{{ url_for('users') }}">Find Friends</a>
+    </nav>
 
-<h2>Your Friends</h2>
-{% if friends %}
-  <ul>
-    {% for friend in friends %}
-      <li>
-        <img src="{{ friend.avatar_url() }}" alt="{{ friend.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
-        {{ friend.username }}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>You haven't added any friends yet.</p>
-{% endif %}
+    <a class="logout-link" href="{{ url_for('logout') }}" aria-label="Log out" title="Log out">↗</a>
+  </header>
 
-<a href="{{ url_for('calendar') }}">My Travel Calendar 🗓️</a>
-<a href="{{ url_for('my_photos') }}">My Photos 📷</a>
+  <section class="dashboard-main">
+    <div class="dashboard-heading">
+      <div>
+        <p class="eyebrow">YOUR NEXT ADVENTURE STARTS HERE</p>
+        <h1>My Groups</h1>
+        <p class="dashboard-subtitle">Make memories together, one trip at a time.</p>
+      </div>
+      <span class="group-count">{{ my_groups|length }} {{ 'group' if my_groups|length == 1 else 'groups' }}</span>
+    </div>
 
-<h2>Your Groups</h2>
-<a href="{{ url_for('create_group') }}">Create a New Group</a>
-{% if my_groups %}
-  <ul>
-    {% for group in my_groups %}
-      <li><a href="{{ url_for('view_group', group_id=group.id) }}">{{ group.name }}</a> ({{ group.country }})</li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>You're not in any groups yet.</p>
-{% endif %}
+    {% if my_groups %}
+      <div class="groups-grid">
+        {% for group in my_groups %}
+          <article class="group-card group-card-{{ loop.index0 % 6 }}">
+            <a class="group-card-link" href="{{ url_for('view_group', group_id=group.id) }}" aria-label="Open {{ group.name }}">
+              <div class="group-card-top">
+                <span class="group-kicker">TRAVEL GROUP</span>
+                <span class="group-card-icon" aria-hidden="true">✈</span>
+              </div>
+              <h2>{{ group.name }}</h2>
+              <div class="group-destination">
+                <span class="destination-label">DESTINATION</span>
+                <span class="destination-name">{{ group.country }}</span>
+              </div>
+              <div class="group-card-bottom">
+                <span class="group-date">
+                  {% if group.trip %}
+                    {{ group.trip.start_date.strftime('%d/%m/%Y') }}
+                    {% if group.trip.end_date != group.trip.start_date %}
+                      – {{ group.trip.end_date.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                  {% else %}
+                    Dates not set
+                  {% endif %}
+                </span>
+                <span class="group-member-count">♧ {{ group.members|length }}</span>
+              </div>
+            </a>
+            {% if not group.trip %}
+              <a class="set-dates-link" href="{{ url_for('set_trip_dates', group_id=group.id) }}">Set trip dates <span aria-hidden="true">↗</span></a>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-groups">
+        <span class="empty-groups-icon" aria-hidden="true">✈</span>
+        <h2>Your adventures start with a group</h2>
+        <p>Create a travel group, choose a destination, and invite your friends to plan together.</p>
+      </div>
+    {% endif %}
 
-<a href="{{ url_for('logout') }}">Log Out</a>
+    <div class="create-group-row">
+      <a class="create-group-button" href="{{ url_for('create_group') }}">
+        <span class="create-plus" aria-hidden="true">+</span>
+        Create a group
+      </a>
+      <p>Have a destination in mind? Bring your people together.</p>
+    </div>
+
+    <section class="dashboard-lower" id="notifications">
+      <div class="lower-panel">
+        <div class="lower-panel-heading">
+          <div>
+            <p class="eyebrow">STAY IN THE LOOP</p>
+            <h2>Notifications</h2>
+          </div>
+          {% if pending_request_count > 0 %}
+            <span class="notification-count large">{{ pending_request_count }}</span>
+          {% endif %}
+        </div>
+        {% if pending_requests %}
+          <div class="request-list">
+            {% for req in pending_requests %}
+              <div class="request-item">
+                <img src="{{ req.sender.avatar_url() }}" alt="{{ req.sender.username }}">
+                <div class="request-copy">
+                  <strong>{{ req.sender.username }}</strong>
+                  <span>wants to connect with you</span>
+                </div>
+                <div class="request-actions">
+                  <form action="{{ url_for('accept_friend_request', request_id=req.id) }}" method="POST">
+                    <button class="accept-button" type="submit">Accept</button>
+                  </form>
+                  <form action="{{ url_for('decline_friend_request', request_id=req.id) }}" method="POST">
+                    <button class="decline-button" type="submit">Decline</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="quiet-message">You're all caught up — no new notifications.</p>
+        {% endif %}
+      </div>
+
+      <div class="lower-panel friends-panel">
+        <div class="lower-panel-heading">
+          <div>
+            <p class="eyebrow">YOUR TRAVEL CREW</p>
+            <h2>My Friends</h2>
+          </div>
+          <a class="small-text-link" href="{{ url_for('users') }}">Find friends ↗</a>
+        </div>
+        {% if friends %}
+          <div class="friends-list">
+            {% for friend in friends %}
+              <div class="friend-chip">
+                <img src="{{ friend.avatar_url() }}" alt="{{ friend.username }}">
+                <span>{{ friend.username }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="quiet-message">Your travel crew will show up here. <a href="{{ url_for('users') }}">Find friends</a> to get started.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <footer class="dashboard-footer">
+      <span>PLAIT · PLAN THE TRIP, KEEP THE MEMORIES</span>
+      <a href="{{ url_for('upload_avatar') }}">Edit profile</a>
+    </footer>
+  </section>
+</main>
