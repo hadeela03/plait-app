@@ -120,13 +120,18 @@
                   <span>{{ notification.timestamp.strftime('%d %b · %H:%M') }}</span>
                 </div>
                 {% if notification.notification_type == 'friend_request' and notification.actor %}
+                  {% set request_id = pending_request_ids.get(notification.actor.id) %}
                   <div class="notification-actions">
-                    <form action="{{ url_for('accept_friend_request', request_id=notification.actor.sent_requests|selectattr('receiver_id', 'equalto', current_user.id)|selectattr('status', 'equalto', 'pending')|map(attribute='id')|first) }}" method="POST">
-                      <button type="submit" class="notification-accept">Follow back</button>
-                    </form>
-                    <form action="{{ url_for('decline_friend_request', request_id=notification.actor.sent_requests|selectattr('receiver_id', 'equalto', current_user.id)|selectattr('status', 'equalto', 'pending')|map(attribute='id')|first) }}" method="POST">
-                      <button type="submit" class="notification-decline">Decline</button>
-                    </form>
+                    {% if request_id %}
+                      <form action="{{ url_for('accept_friend_request', request_id=request_id) }}" method="POST">
+                        <button type="submit" class="notification-accept">Follow back</button>
+                      </form>
+                      <form action="{{ url_for('decline_friend_request', request_id=request_id) }}" method="POST">
+                        <button type="submit" class="notification-decline">Decline</button>
+                      </form>
+                    {% else %}
+                      <span class="notification-accepted">✓ Connected</span>
+                    {% endif %}
                   </div>
                 {% endif %}
                 {% if not notification.is_read %}<span class="notification-unread-dot" aria-label="Unread"></span>{% endif %}
