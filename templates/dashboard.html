@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plait — My Groups</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
 <main class="dashboard-shell">
   <header class="dashboard-nav">
     <a class="profile-link" href="{{ url_for('upload_avatar') }}" aria-label="Change profile picture">
@@ -8,13 +20,13 @@
       <a class="nav-link active" href="{{ url_for('dashboard') }}">Home</a>
       <a class="nav-link" href="{{ url_for('my_photos') }}">Album</a>
       <a class="nav-link" href="{{ url_for('calendar') }}">Calendar</a>
+      <a class="nav-link" href="{{ url_for('users') }}">Friends</a>
       <a class="nav-link notification-link" href="#notifications">
         Notification
         {% if pending_request_count > 0 %}
           <span class="notification-count">{{ pending_request_count }}</span>
         {% endif %}
       </a>
-      <a class="nav-link" href="{{ url_for('users') }}">Find Friends</a>
     </nav>
 
     <a class="logout-link" href="{{ url_for('logout') }}" aria-label="Log out" title="Log out">↗</a>
@@ -145,3 +157,5 @@
     </footer>
   </section>
 </main>
+</body>
+</html>
