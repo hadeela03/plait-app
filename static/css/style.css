@@ -1981,3 +1981,401 @@ body.dashboard-body {
 /* PlanIt notifications + shared album */
 .notification-item{position:relative}.notification-actions{display:flex;gap:6px;margin-left:auto}.notification-actions form{margin:0}.notification-actions button{border:0;border-radius:9px;padding:7px 9px;font:900 .62rem Nunito,sans-serif;cursor:pointer}.notification-accept{background:#dcefe1;color:#39704b}.notification-decline{background:#f7eeee;color:#9b6e68}
 .album-body{margin:0;background:#f4faf9;color:#294859;font-family:'Nunito',sans-serif}.album-nav{min-height:68px;padding:0 clamp(18px,4vw,54px);display:flex;align-items:center;justify-content:space-between;background:#dff3f3;border-bottom:2px solid #8d6be8}.album-nav>a{font:900 1.5rem 'Baloo 2',cursive;color:#347fa0;text-decoration:none}.album-nav nav{display:flex;gap:24px}.album-nav nav a{color:#294859;text-decoration:none;font-size:.75rem;font-weight:900}.album-page{width:min(1120px,calc(100% - 32px));margin:auto;padding:42px 0 60px}.album-hero p,.album-section-head p{margin:0 0 5px;color:#8d6be8;font-size:.64rem;font-weight:900;letter-spacing:.14em}.album-hero h1{margin:0;font:800 clamp(2.2rem,5vw,3.2rem)/1 'Baloo 2',cursive;color:#19384a}.album-hero span{display:block;margin-top:8px;color:#718792;font-size:.75rem;font-weight:800}.album-upload-card{margin-top:25px;padding:20px;border-radius:22px;background:#fff;box-shadow:0 12px 30px #28455810;border:1px solid #fff}.album-upload-copy{display:flex;align-items:center;gap:12px}.album-upload-copy h2{margin:0;font:800 1.35rem 'Baloo 2',cursive;color:#19384a}.album-upload-copy p{margin:2px 0 0;color:#82949d;font-size:.7rem}.album-upload-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:#eee8f8;color:#8d6be8;font-size:1.5rem}.album-upload-form{display:grid;grid-template-columns:1fr 1.2fr auto;gap:9px;margin-top:15px}.album-file{display:flex;align-items:center;min-height:45px;padding:0 13px;border:1px dashed #b9d4d8;border-radius:12px;background:#f8fbfb;color:#5e7c87;font-size:.7rem;font-weight:800;cursor:pointer}.album-file input{display:none}.album-upload-form>input{min-width:0;border:1px solid #dce8ea;border-radius:12px;padding:0 13px;background:#f8fbfb;font:600 .72rem Nunito,sans-serif;outline:none}.album-upload-form>button{border:0;border-radius:12px;padding:0 17px;background:#347fa0;color:#fff;font:900 .7rem Nunito,sans-serif;cursor:pointer}.album-section-head{margin:38px 0 14px}.album-section-head h2{margin:0;font:800 1.6rem 'Baloo 2',cursive;color:#19384a}.album-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.album-photo-card{overflow:hidden;border-radius:19px;background:#fff;box-shadow:0 9px 25px #28455810}.album-photo-wrap{aspect-ratio:4/3;background:#e8f1f2;overflow:hidden}.album-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}.album-photo-card:hover img{transform:scale(1.03)}.album-photo-info{padding:12px 14px}.album-photo-info p{margin:0 0 9px;color:#405c68;font-size:.72rem;line-height:1.45}.album-photo-info div{display:flex;justify-content:space-between;gap:8px;color:#91a0a7;font-size:.59rem}.album-photo-info strong{color:#47778f}.album-empty{padding:65px 20px;border-radius:22px;background:#fff;text-align:center;box-shadow:0 10px 25px #28455810}.album-empty>span{font-size:2rem}.album-empty h2{margin:10px 0 4px;font:800 1.5rem 'Baloo 2',cursive}.album-empty p{margin:0;color:#82949d;font-size:.73rem}@media(max-width:760px){.album-upload-form{grid-template-columns:1fr}.album-upload-form>button{min-height:45px}.album-grid{grid-template-columns:repeat(2,1fr)}.notification-actions{margin-left:0}.notification-item{flex-wrap:wrap}}@media(max-width:480px){.album-grid{grid-template-columns:1fr}.album-page{width:calc(100% - 20px)}.album-nav nav a:last-child{display:none}}
+
+
+/* Itinerary page */
+.itinerary-page-body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f1f9f8 0%, #fdf8ef 62%, #f7f2fb 100%);
+  color: #294859;
+  font-family: 'Nunito', sans-serif;
+}
+
+.itinerary-page {
+  width: min(1040px, calc(100% - 32px));
+  margin: auto;
+  padding: 38px 0 48px;
+}
+
+.itinerary-hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 4px 2px 30px;
+}
+
+.itinerary-hero-copy { min-width: 0; }
+
+.itinerary-back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #718792;
+  text-decoration: none;
+  font-size: .68rem;
+  font-weight: 900;
+}
+
+.itinerary-back-link:hover { color: #347fa0; }
+
+.itinerary-eyebrow,
+.itinerary-section-label {
+  margin: 0 0 5px;
+  color: #8d6be8;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.itinerary-hero h1 {
+  margin: 0;
+  color: #19384a;
+  font: 800 clamp(2.2rem, 5vw, 3.3rem)/1 'Baloo 2', cursive;
+}
+
+.itinerary-destination {
+  margin: 8px 0 0;
+  color: #6e8792;
+  font-weight: 800;
+  font-size: .82rem;
+}
+
+.itinerary-date-summary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 275px;
+  padding: 12px 13px;
+  border: 1px solid #fff;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 10px 25px #28455812;
+}
+
+.itinerary-date-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: #eee8f8;
+  color: #8d6be8;
+  font-weight: 900;
+}
+
+.itinerary-date-summary div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.itinerary-date-label {
+  color: #8a9aa2;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.itinerary-date-summary strong {
+  color: #294859;
+  font-size: .76rem;
+}
+
+.itinerary-date-summary a {
+  color: #347fa0;
+  text-decoration: none;
+  font-size: .66rem;
+  font-weight: 900;
+}
+
+.itinerary-section { margin-top: 2px; }
+
+.itinerary-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+
+.itinerary-section-heading h2 {
+  margin: 2px 0 0;
+  color: #19384a;
+  font: 800 1.65rem/1.1 'Baloo 2', cursive;
+}
+
+.itinerary-day-count {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #edf6f7;
+  color: #47778f;
+  font-size: .65rem;
+  font-weight: 900;
+}
+
+.itinerary-list {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.itinerary-list::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  bottom: 34px;
+  left: 51px;
+  width: 2px;
+  background: #dcebed;
+}
+
+.itinerary-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid #fff;
+  border-radius: 21px;
+  background: #fff;
+  box-shadow: 0 11px 28px #28455810;
+}
+
+.itinerary-card-date {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 18px;
+  background: #edf6f7;
+  color: #47778f;
+}
+
+.itinerary-card-date span {
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.itinerary-card-date strong {
+  margin: -1px 0;
+  color: #294859;
+  font: 800 1.55rem/1 'Baloo 2', cursive;
+}
+
+.itinerary-card-date small {
+  color: #82949d;
+  font-size: .58rem;
+  font-weight: 900;
+}
+
+.itinerary-card-content { min-width: 0; }
+
+.itinerary-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+
+.itinerary-day-number {
+  color: #8d6be8;
+  font-size: .57rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.itinerary-card-heading h3 {
+  margin: 2px 0 0;
+  color: #294859;
+  font: 800 1.05rem/1.15 'Baloo 2', cursive;
+}
+
+.itinerary-today-badge {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: #f1ebf8;
+  color: #8065a0;
+  font-size: .55rem;
+  font-weight: 900;
+}
+
+.itinerary-form label {
+  display: block;
+  margin-bottom: 6px;
+  color: #66818c;
+  font-size: .62rem;
+  font-weight: 900;
+}
+
+.itinerary-form textarea {
+  display: block;
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  padding: 12px 13px;
+  border: 1px solid #dce8ea;
+  border-radius: 13px;
+  background: #f8fbfb;
+  color: #405c68;
+  font: 600 .73rem/1.55 Nunito, sans-serif;
+  outline: none;
+}
+
+.itinerary-form textarea::placeholder { color: #9aabb1; }
+
+.itinerary-form textarea:focus {
+  border-color: #79b8ca;
+  background: #fff;
+  box-shadow: 0 0 0 3px #79b8ca22;
+}
+
+.itinerary-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 9px;
+}
+
+.itinerary-form-footer span {
+  color: #91a0a7;
+  font-size: .58rem;
+}
+
+.itinerary-form-footer button,
+.itinerary-primary-action {
+  border: 0;
+  border-radius: 11px;
+  padding: 9px 13px;
+  background: #347fa0;
+  color: #fff;
+  text-decoration: none;
+  font: 900 .65rem Nunito, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 7px 17px #347fa024;
+}
+
+.itinerary-form-footer button span,
+.itinerary-primary-action span { margin-left: 5px; }
+
+.itinerary-form-footer button:hover,
+.itinerary-primary-action:hover { background: #2e718f; }
+
+.itinerary-empty {
+  max-width: 620px;
+  margin: 28px auto 45px;
+  padding: 50px 30px;
+  border: 1px solid #fff;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 16px 36px #28455810;
+  text-align: center;
+}
+
+.itinerary-empty-art {
+  position: relative;
+  width: 100px;
+  height: 78px;
+  margin: 0 auto 12px;
+  border-radius: 25px;
+  background: #dff3f3;
+}
+
+.itinerary-empty-art span {
+  position: absolute;
+  left: 28px;
+  top: 18px;
+  color: #347fa0;
+  font-size: 2.25rem;
+  transform: rotate(-12deg);
+}
+
+.itinerary-empty-art i {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  color: #8d6be8;
+  font-size: 1.15rem;
+  font-style: normal;
+}
+
+.itinerary-empty-art b {
+  position: absolute;
+  left: 17px;
+  bottom: 12px;
+  color: #efc957;
+  font-size: 1.5rem;
+}
+
+.itinerary-empty h2 {
+  margin: 3px 0 7px;
+  color: #19384a;
+  font: 800 1.75rem/1.1 'Baloo 2', cursive;
+}
+
+.itinerary-empty p:not(.itinerary-section-label) {
+  max-width: 470px;
+  margin: 0 auto 21px;
+  color: #718792;
+  font-size: .76rem;
+  line-height: 1.65;
+}
+
+.itinerary-primary-action { display: inline-block; }
+
+.itinerary-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 28px;
+  padding: 18px 2px 0;
+  border-top: 1px solid #dce8ea;
+}
+
+.itinerary-footer a {
+  color: #47778f;
+  text-decoration: none;
+  font-size: .64rem;
+  font-weight: 900;
+}
+
+.itinerary-footer span {
+  color: #9aa8ad;
+  font-size: .56rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+@media (max-width: 760px) {
+  .itinerary-page { padding-top: 25px; }
+  .itinerary-hero { align-items: stretch; flex-direction: column; }
+  .itinerary-date-summary { min-width: 0; }
+  .itinerary-list::before { left: 44px; }
+  .itinerary-card { grid-template-columns: 62px minmax(0, 1fr); gap: 14px; padding: 14px; }
+  .itinerary-card-date { width: 62px; height: 68px; border-radius: 15px; }
+  .itinerary-card-heading { flex-direction: column; }
+  .itinerary-today-badge { align-self: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .itinerary-page { width: min(100% - 20px, 1040px); }
+  .itinerary-hero h1 { font-size: 2.25rem; }
+  .itinerary-card { grid-template-columns: 1fr; }
+  .itinerary-list::before { display: none; }
+  .itinerary-card-date { width: 100%; height: 48px; flex-direction: row; gap: 7px; justify-content: flex-start; padding: 0 13px; }
+  .itinerary-card-date strong { font-size: 1.25rem; }
+  .itinerary-form-footer { align-items: flex-start; flex-direction: column; }
+  .itinerary-form-footer button { width: 100%; }
+  .itinerary-footer { align-items: flex-start; flex-direction: column; }
+}
