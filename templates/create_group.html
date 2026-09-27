@@ -1,9 +1,50 @@
-<h1>Create a Group</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create a group · Plait</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="create-group-body">
+  <header class="group-nav">
+    <a class="group-nav-brand" href="{{ url_for('dashboard') }}">Plait</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('calendar') }}">Calendar</a>
+      <a href="{{ url_for('users') }}">Find Friends</a>
+    </nav>
+  </header>
 
-<form method="POST">
-  <input type="text" name="name" placeholder="Group name" required><br>
-  <input type="text" name="country" placeholder="Country" required><br>
-  <button type="submit">Create Group</button>
-</form>
+  <main class="create-group-page">
+    <div class="create-group-card">
+      <div class="create-group-art" aria-hidden="true">
+        <span class="create-sun">☀</span>
+        <span class="create-plane">✈</span>
+        <span class="create-pin">●</span>
+      </div>
+      <div class="create-group-copy">
+        <p class="group-eyebrow">PLAN IT TOGETHER</p>
+        <h1>Create your trip group</h1>
+        <p class="create-group-intro">Give your adventure a name and choose where you're heading. You can invite your friends and start planning right away.</p>
 
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+        <form method="POST" class="create-group-form">
+          <div class="create-field">
+            <label for="name">Group name</label>
+            <input id="name" type="text" name="name" placeholder="e.g. Summer in Japan" required>
+          </div>
+
+          <div class="create-field">
+            <label for="country">Destination</label>
+            <input id="country" type="text" name="country" placeholder="e.g. Japan" required>
+          </div>
+
+          <button type="submit" class="create-group-submit">Create group <span>→</span></button>
+        </form>
+
+        <a class="create-group-back" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
