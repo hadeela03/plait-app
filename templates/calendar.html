@@ -1,44 +1,116 @@
-<h1>My Travel Calendar 🗓️</h1>
+{% extends "base.html" %}
+{% block title %}Calendar · Plait{% endblock %}
+{% block content %}
+<div class="calendar-shell">
+  <nav class="calendar-nav">
+    <a href="{{ url_for('dashboard') }}">← Dashboard</a>
+    <h1>Calendar</h1>
+    <a class="calendar-avatar" href="{{ url_for('profile') }}"><img src="{{ current_user.avatar_url() }}" alt="Profile"></a>
+  </nav>
 
-<h2>Upcoming Trips</h2>
-{% if upcoming_trips %}
-  {% for item in upcoming_trips %}
-    <div style="border: 2px solid #4a90d9; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-      <h3>{{ item.group.name }} — {{ item.group.country }}</h3>
-      <p><strong>{{ item.trip.start_date.strftime('%b %d, %Y') }} — {{ item.trip.end_date.strftime('%b %d, %Y') }}</strong></p>
-      <a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">View / Edit Full Itinerary</a>
-
-      <div style="margin-top: 10px;">
-        {% for day in item.days %}
-          <div style="padding: 8px; border-bottom: 1px solid #eee; {% if day.date == today %}background: #fff3cd;{% endif %}">
-            <strong>{{ day.date.strftime('%A, %b %d') }}</strong>
-            {% if day.date == today %}<span style="color: #d9822b;"> (Today)</span>{% endif %}
-            <br>
-            {% if day.activity %}
-              {{ day.activity }}
-            {% else %}
-              <em>Nothing planned yet</em>
-            {% endif %}
-          </div>
-        {% endfor %}
+  <main class="calendar-main">
+    <section class="calendar-heading">
+      <div>
+        <span class="calendar-kicker">YOUR TRAVEL PLANS</span>
+        <h2>Trip calendar</h2>
+        <p>Confirmed trips and their day-by-day itineraries, all in one place.</p>
       </div>
-    </div>
-  {% endfor %}
-{% else %}
-  <p>No upcoming trips yet. Confirm dates in a group to see it here!</p>
-{% endif %}
+      <div class="calendar-controls">
+        <button type="button" id="prev-month" aria-label="Previous month">‹</button>
+        <strong id="calendar-month"></strong>
+        <button type="button" id="next-month" aria-label="Next month">›</button>
+      </div>
+    </section>
 
-<h2>Past Trips</h2>
-{% if past_trips %}
-  {% for item in past_trips %}
-    <div style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 15px; opacity: 0.7;">
-      <h3>{{ item.group.name }} — {{ item.group.country }}</h3>
-      <p>{{ item.trip.start_date.strftime('%b %d, %Y') }} — {{ item.trip.end_date.strftime('%b %d, %Y') }}</p>
-      <a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">View Itinerary</a>
-    </div>
-  {% endfor %}
-{% else %}
-  <p>No past trips yet.</p>
-{% endif %}
+    <section class="calendar-card">
+      <div class="calendar-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div class="calendar-grid" id="calendar-grid">
+        {% for day in range(1, 43) %}<div class="calendar-cell" data-cell="{{ day }}"></div>{% endfor %}
+      </div>
+    </section>
 
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    <section class="calendar-trips">
+      <div class="calendar-section-head">
+        <div><span class="calendar-kicker">UPCOMING TRIPS</span><h2>Your adventures</h2></div>
+        <span class="trip-total">{{ upcoming_trips|length }}</span>
+      </div>
+
+      {% if upcoming_trips %}
+        <div class="trip-strip">
+          {% for item in upcoming_trips %}
+            <article class="trip-bar" data-start="{{ item.trip.start_date.isoformat() }}" data-end="{{ item.trip.end_date.isoformat() }}">
+              <div class="trip-date-box">
+                <b>{{ item.trip.start_date.strftime('%d') }}</b>
+                <span>{{ item.trip.start_date.strftime('%b') }}</span>
+              </div>
+              <div class="trip-bar-info">
+                <strong>{{ item.group.name }}</strong>
+                <span>{{ item.group.country }} · {{ item.trip.start_date.strftime('%d %b %Y') }} – {{ item.trip.end_date.strftime('%d %b %Y') }}</span>
+              </div>
+              <a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">View itinerary →</a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="calendar-no-trips">No confirmed trips yet. Once a group confirms its dates, the trip will appear here.</div>
+      {% endif %}
+    </section>
+
+    <section class="itinerary-section">
+      <div class="calendar-section-head"><div><span class="calendar-kicker">DAY BY DAY</span><h2>Confirmed itineraries</h2></div></div>
+      {% if upcoming_trips %}
+        <div class="itinerary-timeline">
+          {% for item in upcoming_trips %}
+            <article class="itinerary-trip">
+              <div class="itinerary-trip-head"><div><strong>{{ item.group.name }}</strong><span>{{ item.group.country }}</span></div><a href="{{ url_for('view_itinerary', group_id=item.group.id) }}">Edit itinerary ↗</a></div>
+              <div class="itinerary-days">
+                {% for day in item.days %}
+                  <div class="itinerary-day {% if day.date == today %}today{% endif %}">
+                    <div class="itinerary-day-date"><b>{{ day.date.strftime('%d') }}</b><span>{{ day.date.strftime('%a') }}</span></div>
+                    <div><strong>{{ day.date.strftime('%A, %d %B %Y') }}{% if day.date == today %} · Today{% endif %}</strong><p>{{ day.activity or 'No activity added yet.' }}</p></div>
+                  </div>
+                {% endfor %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const trips = [{% for item in upcoming_trips %}{ group: {{ item.group.name|tojson }}, country: {{ item.group.country|tojson }}, start: "{{ item.trip.start_date.isoformat() }}", end: "{{ item.trip.end_date.isoformat() }}", days: [{% for day in item.days %}{ date: "{{ day.date.isoformat() }}", activity: {{ (day.activity or 'No activity added yet.')|tojson }} }{% if not loop.last %},{% endif %}{% endfor %}] }{% if not loop.last %},{% endif %}{% endfor %}];
+  const grid = document.getElementById('calendar-grid'), label = document.getElementById('calendar-month');
+  let cursor = new Date({{ today.year }}, {{ today.month - 1 }}, 1);
+  const pad = n => String(n).padStart(2, '0');
+  const iso = d => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  function render() {
+    const y=cursor.getFullYear(), m=cursor.getMonth();
+    label.textContent=cursor.toLocaleString('en-US',{month:'long',year:'numeric'});
+    const first=new Date(y,m,1), start=first.getDay(), last=new Date(y,m+1,0).getDate();
+    grid.innerHTML='';
+    for(let i=0;i<42;i++){
+      const d=i-start+1, cell=document.createElement('div'); cell.className='calendar-cell';
+      if(d<1||d>last){cell.classList.add('empty');grid.appendChild(cell);continue;}
+      const date=new Date(y,m,d), key=iso(date); cell.innerHTML='<span class="calendar-number">'+d+'</span>';
+      const matches=trips.filter(t=>key>=t.start&&key<=t.end);
+      matches.forEach(t=>{
+        const day=t.days.find(x=>x.date===key);
+        const event=document.createElement('div'); event.className='calendar-event';
+        event.textContent=t.group; event.title=(day&&day.activity)||t.country;
+        cell.appendChild(event);
+      });
+      if(key === "{{ today.isoformat() }}") cell.classList.add('today');
+      grid.appendChild(cell);
+    }
+  }
+  document.getElementById('prev-month').onclick=()=>{cursor.setMonth(cursor.getMonth()-1);render()};
+  document.getElementById('next-month').onclick=()=>{cursor.setMonth(cursor.getMonth()+1);render()};
+  render();
+})();
+</script>
+{% endblock %}
