@@ -782,7 +782,7 @@ def profile():
         flash('Your account details have been saved.')
         return redirect(url_for('profile'))
 
-    return render_template('profile.html')
+    return render_template('profile.html', now_date=datetime.now().date().isoformat())
 
 
 @app.route('/upload-avatar', methods=['GET', 'POST'])
