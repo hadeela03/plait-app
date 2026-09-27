@@ -173,8 +173,14 @@ def inject_pending_count():
         ).count()
         pending_requests = FriendRequest.query.filter_by(
             receiver_id=current_user.id, status='pending'
-        ).count()
-        return {'unread_notification_count': count, 'pending_request_count': pending_requests}
+        ).all()
+        pending_request_count = len(pending_requests)
+        pending_request_ids = {request.sender_id: request.id for request in pending_requests}
+        return {
+            'unread_notification_count': count,
+            'pending_request_count': pending_request_count,
+            'pending_request_ids': pending_request_ids
+        }
     return {'unread_notification_count': 0, 'pending_request_count': 0}
 
 
@@ -301,12 +307,30 @@ def accept_friend_request(request_id):
         flash("You can't accept this request.")
         return redirect(url_for('dashboard'))
 
+    if req.status == 'accepted':
+        flash(f'You are already friends with {req.sender.username}!')
+        return redirect(url_for('dashboard'))
+
+    existing_friendship = Friendship.query.filter_by(
+        user_id=req.sender_id, friend_id=req.receiver_id
+    ).first()
     req.status = 'accepted'
 
-    friendship1 = Friendship(user_id=req.sender_id, friend_id=req.receiver_id)
-    friendship2 = Friendship(user_id=req.receiver_id, friend_id=req.sender_id)
-    db.session.add(friendship1)
-    db.session.add(friendship2)
+    if not existing_friendship:
+        db.session.add(Friendship(user_id=req.sender_id, friend_id=req.receiver_id))
+
+    reverse_friendship = Friendship.query.filter_by(
+        user_id=req.receiver_id, friend_id=req.sender_id
+    ).first()
+    if not reverse_friendship:
+        db.session.add(Friendship(user_id=req.receiver_id, friend_id=req.sender_id))
+
+    Notification.query.filter_by(
+        user_id=current_user.id,
+        actor_id=req.sender_id,
+        notification_type='friend_request'
+    ).update({'is_read': True})
+
     db.session.commit()
 
     flash(f'You are now friends with {req.sender.username}!')
