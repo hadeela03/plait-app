@@ -1,31 +1,78 @@
-<h1>Find Friends</h1>
+{% extends "base.html" %}
+{% block title %}Find Friends · Plait{% endblock %}
+{% block content %}
+<div class="friends-shell">
+  <nav class="friends-nav">
+    <a class="friends-back" href="{{ url_for('dashboard') }}">← Dashboard</a>
+    <div class="friends-logo">PLAIT</div>
+    <a class="friends-avatar" href="{{ url_for('profile') }}"><img src="{{ current_user.avatar_url() }}" alt="Profile"></a>
+  </nav>
 
-<form method="GET" action="{{ url_for('users') }}">
-  <input type="text" name="search" placeholder="Search by username" value="{{ search_query }}">
-  <button type="submit">Search</button>
-</form>
+  <main class="friends-main">
+    <section class="friends-intro">
+      <div>
+        <span class="friends-kicker">YOUR TRAVEL CREW</span>
+        <h1>Find your people.</h1>
+        <p>Connect with friends on Plait and make planning your next adventure a little more fun.</p>
+      </div>
+      <div class="friends-mark">♧</div>
+    </section>
 
-{% if search_query %}
-  {% if results %}
-    <ul>
-      {% for user in results %}
-        <li>
-          {{ user.username }}
-          {% if user.id in friend_ids %}
-            <span>(Already friends)</span>
-          {% elif user.id in pending_ids %}
-            <span>(Request pending)</span>
-          {% else %}
-            <form action="{{ url_for('send_friend_request', receiver_id=user.id) }}" method="POST" style="display:inline;">
-              <button type="submit">Send Friend Request</button>
-            </form>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No users found matching "{{ search_query }}".</p>
-  {% endif %}
-{% endif %}
+    <section class="friends-search-box">
+      <form method="GET" action="{{ url_for('users') }}">
+        <label for="friend-search">Search for a friend</label>
+        <div class="friends-search-line">
+          <div class="friends-input">
+            <span>⌕</span>
+            <input id="friend-search" type="search" name="search" placeholder="Enter a username..." value="{{ search_query }}">
+          </div>
+          <button type="submit">Search <span>→</span></button>
+        </div>
+      </form>
+    </section>
 
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    {% if search_query %}
+      <section class="friends-results">
+        <div class="friends-results-head">
+          <div><span class="friends-kicker">PEOPLE ON PLAIT</span><h2>Results for “{{ search_query }}”</h2></div>
+          <span class="friends-count">{{ results|length }}</span>
+        </div>
+        {% if results %}
+          <div class="friends-grid">
+            {% for user in results %}
+              <article class="person-card">
+                <div class="person-avatar-wrap">
+                  <img class="person-avatar" src="{{ user.avatar_url() }}" alt="{{ user.username }}">
+                  <span class="person-dot"></span>
+                </div>
+                <div class="person-info">
+                  <h3>{{ user.username }}</h3>
+                  <p>Plait traveller</p>
+                </div>
+                {% if user.id in friend_ids %}
+                  <span class="person-state friends">✓ Friends</span>
+                {% elif user.id in pending_ids %}
+                  <span class="person-state pending">Request sent</span>
+                {% else %}
+                  <form action="{{ url_for('send_friend_request', receiver_id=user.id) }}" method="POST">
+                    <button class="add-friend" type="submit">Add friend <b>+</b></button>
+                  </form>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="friends-empty"><div class="empty-icon">⌕</div><h2>No travellers found</h2><p>Try another username and we'll help you find them.</p></div>
+        {% endif %}
+      </section>
+    {% else %}
+      <section class="friends-empty friends-welcome">
+        <div class="empty-icon">✦</div>
+        <span class="friends-kicker">READY FOR THE NEXT ADVENTURE?</span>
+        <h2>Start building your travel crew</h2>
+        <p>Search for a friend above to send a request and connect on Plait.</p>
+      </section>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
