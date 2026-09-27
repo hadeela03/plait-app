@@ -1,29 +1,24 @@
-<h1>{{ group.name }} — Trip Album</h1>
-<p>Destination: {{ group.country }}</p>
-
-<form method="POST" action="{{ url_for('upload_group_photo', group_id=group.id) }}" enctype="multipart/form-data">
-  <input type="file" name="photo" accept="image/*" required>
-  <input type="text" name="caption" placeholder="Add a caption (optional)">
-  <button type="submit">Add Photo</button>
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ group.name }} · PlanIt Album</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="album-body">
+<header class="album-nav"><a href="{{ url_for('dashboard') }}">PlanIt</a><nav><a href="{{ url_for('view_group', group_id=group.id) }}">← Back to group</a><a href="{{ url_for('calendar') }}">Calendar</a></nav></header>
+<main class="album-page">
+<section class="album-hero"><div><p>SHARED TRAVEL ALBUM</p><h1>{{ group.name }}</h1><span>📍 {{ group.country }} · {{ photos|length }} {{ 'photo' if photos|length == 1 else 'photos' }}</span></div></section>
+<section class="album-upload-card">
+<div class="album-upload-copy"><span class="album-upload-icon">＋</span><div><h2>Add to the memories</h2><p>Share a photo from your trip with everyone in the group.</p></div></div>
+<form method="POST" action="{{ url_for('upload_group_photo', group_id=group.id) }}" enctype="multipart/form-data" class="album-upload-form">
+<label class="album-file"><span id="file-label">Choose a photo</span><input id="photo-input" type="file" name="photo" accept="image/png,image/jpeg,image/gif" required></label>
+<input type="text" name="caption" placeholder="Add a caption (optional)">
+<button type="submit">Add photo →</button>
 </form>
-
-<hr>
-
-{% if photos %}
-  <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-    {% for photo in photos %}
-      <div style="width: 200px;">
-        <img src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" style="width: 100%; border-radius: 8px;">
-        {% if photo.caption %}
-          <p>{{ photo.caption }}</p>
-        {% endif %}
-        <small>By {{ photo.uploader.username }} — {{ photo.timestamp.strftime('%b %d, %Y') }}</small>
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <p>No photos yet — be the first to add one!</p>
-{% endif %}
-
-<br>
-<a href="{{ url_for('view_group', group_id=group.id) }}">Back to Group</a>
+</section>
+<section class="album-section-head"><div><p>MEMORIES TOGETHER</p><h2>Trip photos</h2></div></section>
+{% if photos %}<section class="album-grid">
+{% for photo in photos %}<article class="album-photo-card"><div class="album-photo-wrap"><img src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" alt="{{ photo.caption or 'Trip photo' }}" loading="lazy"></div><div class="album-photo-info">{% if photo.caption %}<p>{{ photo.caption }}</p>{% endif %}<div><span>By <strong>{{ photo.uploader.username }}</strong></span><span>{{ photo.timestamp.strftime('%b %d, %Y') }}</span></div></div></article>{% endfor %}
+</section>{% else %}<div class="album-empty"><span>📷</span><h2>No memories yet</h2><p>Be the first person in your group to add a photo.</p></div>{% endif %}
+</main>
+<script>document.getElementById('photo-input').addEventListener('change',function(){document.getElementById('file-label').textContent=this.files.length?this.files[0].name:'Choose a photo';});</script>
+</body></html>
