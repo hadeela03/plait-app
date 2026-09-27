@@ -817,11 +817,22 @@ def my_photos():
     my_memberships = Membership.query.filter_by(user_id=current_user.id).all()
     my_group_ids = [m.group_id for m in my_memberships]
 
-    photos = GroupPhoto.query.filter(
-        GroupPhoto.group_id.in_(my_group_ids)
-    ).order_by(GroupPhoto.timestamp.desc()).all()
+    if my_group_ids:
+        photos = GroupPhoto.query.filter(
+            GroupPhoto.group_id.in_(my_group_ids),
+            GroupPhoto.uploader_id == current_user.id
+        ).order_by(GroupPhoto.timestamp.desc()).all()
+    else:
+        photos = []
 
-    return render_template('my_photos.html', photos=photos)
+    photo_groups = []
+    seen_group_ids = set()
+    for photo in photos:
+        if photo.group_id not in seen_group_ids:
+            photo_groups.append(photo.group)
+            seen_group_ids.add(photo.group_id)
+
+    return render_template('my_photos.html', photos=photos, photo_groups=photo_groups)
 
 @app.route('/logout')
 @login_required
