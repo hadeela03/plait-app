@@ -1,20 +1,108 @@
-<h1>My Photos 📷</h1>
-
-{% if photos %}
-  <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-    {% for photo in photos %}
-      <div style="width: 200px;">
-        <img src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" style="width: 100%; border-radius: 8px;">
-        {% if photo.caption %}
-          <p>{{ photo.caption }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Album · Plait</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+<main class="dashboard-shell">
+  <header class="dashboard-nav">
+    <a class="profile-link" href="{{ url_for('profile') }}" aria-label="Open your profile and account settings">
+      <img src="{{ current_user.avatar_url() }}" alt="{{ current_user.username }}'s profile picture">
+    </a>
+    <nav class="dashboard-links" aria-label="Main navigation">
+      <a class="nav-link" href="{{ url_for('dashboard') }}">Home</a>
+      <a class="nav-link active" href="{{ url_for('my_photos') }}">Album</a>
+      <a class="nav-link" href="{{ url_for('calendar') }}">Calendar</a>
+      <a class="nav-link" href="{{ url_for('users') }}">Friends</a>
+      <a class="nav-link notification-link" href="{{ url_for('dashboard') }}#notifications">
+        Notification
+        {% if pending_request_count > 0 %}
+          <span class="notification-count">{{ pending_request_count }}</span>
         {% endif %}
-        <small>{{ photo.group.name }} ({{ photo.group.country }}) — by {{ photo.uploader.username }}</small><br>
-        <small>{{ photo.timestamp.strftime('%b %d, %Y') }}</small>
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <p>No photos yet — join a group and start sharing memories!</p>
-{% endif %}
+      </a>
+    </nav>
+    <a class="logout-link" href="{{ url_for('logout') }}" aria-label="Log out" title="Log out">↗</a>
+  </header>
 
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+  <section class="dashboard-main album-main">
+    <div class="dashboard-heading album-heading">
+      <div>
+        <p class="eyebrow">YOUR PERSONAL COLLECTION</p>
+        <h1>My Album</h1>
+        <p class="dashboard-subtitle">The moments you’ve added to your group adventures.</p>
+      </div>
+      <span class="group-count">{{ photos|length }} {{ 'photo' if photos|length == 1 else 'photos' }}</span>
+    </div>
+
+    {% if photos %}
+      <div class="album-intro">
+        <span class="album-intro-icon" aria-hidden="true">♡</span>
+        <p>Only photos you uploaded are shown here. Choose a group below to revisit its shared album or add another memory.</p>
+      </div>
+
+      {% for group in photo_groups %}
+        <section class="personal-album-section">
+          <div class="personal-album-heading">
+            <div>
+              <p class="eyebrow">TRIP COLLECTION</p>
+              <h2>{{ group.name }}</h2>
+              <p>{{ group.country }}</p>
+            </div>
+            <a class="small-text-link" href="{{ url_for('view_album', group_id=group.id) }}">Open group album ↗</a>
+          </div>
+
+          <div class="personal-photo-grid">
+            {% for photo in photos if photo.group_id == group.id %}
+              <article class="personal-photo-card">
+                <a class="personal-photo-image-link" href="{{ url_for('static', filename='group_photos/' + photo.filename) }}" target="_blank" rel="noopener" aria-label="View photo{% if photo.caption %}: {{ photo.caption }}{% endif %}">
+                  <img class="personal-photo-image" src="{{ url_for('static', filename='group_photos/' + photo.filename) }}" alt="{{ photo.caption or ('Photo from ' + group.name) }}" loading="lazy">
+                  <span class="photo-open-icon" aria-hidden="true">↗</span>
+                </a>
+                <div class="personal-photo-details">
+                  {% if photo.caption %}
+                    <p class="personal-photo-caption">{{ photo.caption }}</p>
+                  {% else %}
+                    <p class="personal-photo-caption muted-caption">A memory from {{ group.name }}</p>
+                  {% endif %}
+                  <span class="personal-photo-date">
+                    <span aria-hidden="true">♡</span>
+                    {{ photo.timestamp.strftime('%b %d, %Y') if photo.timestamp else 'Date not available' }}
+                  </span>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <section class="album-empty-state">
+        <div class="album-empty-art" aria-hidden="true">
+          <span class="album-empty-sparkle sparkle-one">✦</span>
+          <span class="album-empty-photo">♡</span>
+          <span class="album-empty-sparkle sparkle-two">✧</span>
+        </div>
+        <p class="eyebrow">YOUR STORY STARTS HERE</p>
+        <h2>No photos from you yet</h2>
+        <p>When you upload photos to a group album, your memories will appear here, collected in one place.</p>
+        {% if photo_groups %}
+          <a class="create-group-button" href="{{ url_for('dashboard') }}">Explore my groups</a>
+        {% else %}
+          <a class="create-group-button" href="{{ url_for('dashboard') }}">Explore my groups</a>
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <footer class="dashboard-footer">
+      <span>PLAIT · YOUR ADVENTURES, YOUR MEMORIES</span>
+      <a href="{{ url_for('dashboard') }}">Back to Home</a>
+    </footer>
+  </section>
+</main>
+</body>
+</html>
