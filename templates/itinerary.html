@@ -1,25 +1,106 @@
-<h1>{{ group.name }} — Itinerary</h1>
-<p>Destination: {{ group.country }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ group.name }} · Itinerary · Plait</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="itinerary-page-body">
+  <header class="group-nav">
+    <a class="group-nav-brand" href="{{ url_for('dashboard') }}">Plait</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('calendar') }}">Calendar</a>
+      <a href="{{ url_for('users') }}">Find Friends</a>
+      <a href="{{ url_for('logout') }}" class="group-logout">↪</a>
+    </nav>
+  </header>
 
-{% if trip %}
-  <p><strong>Trip dates:</strong> {{ trip.start_date.strftime('%b %d, %Y') }} — {{ trip.end_date.strftime('%b %d, %Y') }}</p>
-  <a href="{{ url_for('set_trip_dates', group_id=group.id) }}">Change Dates</a>
-
-  <div style="margin-top: 20px;">
-    {% for day in days %}
-      <div style="border: 1px solid #ccc; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-        <h3>{{ day.date.strftime('%A, %b %d, %Y') }}</h3>
-        <form method="POST" action="{{ url_for('update_itinerary_day', day_id=day.id) }}">
-          <textarea name="activity" rows="3" style="width: 100%;" placeholder="What's planned for this day?">{{ day.activity or '' }}</textarea><br>
-          <button type="submit">Save</button>
-        </form>
+  <main class="itinerary-page">
+    <section class="itinerary-hero">
+      <div class="itinerary-hero-copy">
+        <a class="itinerary-back-link" href="{{ url_for('view_group', group_id=group.id) }}">← Back to {{ group.name }}</a>
+        <p class="itinerary-eyebrow">YOUR TRIP PLAN</p>
+        <h1>{{ group.name }}</h1>
+        <p class="itinerary-destination">✈ {{ group.country }}</p>
       </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <p>No trip dates set yet.</p>
-  <a href="{{ url_for('set_trip_dates', group_id=group.id) }}">Confirm Trip Dates</a>
-{% endif %}
+      {% if trip %}
+        <div class="itinerary-date-summary">
+          <span class="itinerary-date-icon">▣</span>
+          <div>
+            <span class="itinerary-date-label">TRIP DATES</span>
+            <strong>{{ trip.start_date.strftime('%b %d') }} — {{ trip.end_date.strftime('%b %d, %Y') }}</strong>
+          </div>
+          <a href="{{ url_for('set_trip_dates', group_id=group.id) }}">Change</a>
+        </div>
+      {% endif %}
+    </section>
 
-<br>
-<a href="{{ url_for('view_group', group_id=group.id) }}">Back to Group</a>
+    {% if trip %}
+      <section class="itinerary-section">
+        <div class="itinerary-section-heading">
+          <div>
+            <p class="itinerary-section-label">DAY BY DAY</p>
+            <h2>Your adventure</h2>
+          </div>
+          <span class="itinerary-day-count">{{ days|length }} {{ 'day' if days|length == 1 else 'days' }}</span>
+        </div>
+
+        <div class="itinerary-list">
+          {% for day in days %}
+            <article class="itinerary-card">
+              <div class="itinerary-card-date">
+                <span>{{ day.date.strftime('%a')|upper }}</span>
+                <strong>{{ day.date.strftime('%d') }}</strong>
+                <small>{{ day.date.strftime('%b') }}</small>
+              </div>
+
+              <div class="itinerary-card-content">
+                <div class="itinerary-card-heading">
+                  <div>
+                    <span class="itinerary-day-number">DAY {{ loop.index }}</span>
+                    <h3>{{ day.date.strftime('%A, %B %d') }}</h3>
+                  </div>
+                  {% if loop.first %}
+                    <span class="itinerary-today-badge">START HERE ✦</span>
+                  {% endif %}
+                </div>
+
+                <form class="itinerary-form" method="POST" action="{{ url_for('update_itinerary_day', day_id=day.id) }}">
+                  <label for="activity-{{ day.id }}">Plans for the day</label>
+                  <textarea id="activity-{{ day.id }}" name="activity" rows="3" placeholder="Add activities, places to visit, meal plans, or anything your group should remember...">{{ day.activity or '' }}</textarea>
+                  <div class="itinerary-form-footer">
+                    <span>Keep it flexible — you can update this anytime.</span>
+                    <button type="submit">Save plans <span aria-hidden="true">↗</span></button>
+                  </div>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <section class="itinerary-empty">
+        <div class="itinerary-empty-art" aria-hidden="true">
+          <span>✈</span>
+          <i>✦</i>
+          <b>•</b>
+        </div>
+        <p class="itinerary-section-label">ONE STEP BEFORE THE FUN</p>
+        <h2>Set your trip dates</h2>
+        <p>Choose when you're travelling and we'll build a day-by-day space for your group to plan the adventure together.</p>
+        <a class="itinerary-primary-action" href="{{ url_for('set_trip_dates', group_id=group.id) }}">Confirm trip dates <span>↗</span></a>
+      </section>
+    {% endif %}
+
+    <div class="itinerary-footer">
+      <a href="{{ url_for('view_group', group_id=group.id) }}">← Back to group chat</a>
+      <span>PLAIT · PLAN THE TRIP, KEEP THE MEMORIES</span>
+    </div>
+  </main>
+</body>
+</html>
