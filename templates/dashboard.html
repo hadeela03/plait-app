@@ -12,7 +12,7 @@
 <body class="dashboard-body">
 <main class="dashboard-shell">
   <header class="dashboard-nav">
-    <a class="profile-link" href="{{ url_for('upload_avatar') }}" aria-label="Change profile picture">
+    <a class="profile-link" href="{{ url_for('profile') }}" aria-label="Open your profile and account settings">
       <img src="{{ current_user.avatar_url() }}" alt="{{ current_user.username }}'s profile picture">
     </a>
 
