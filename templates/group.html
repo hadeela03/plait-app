@@ -1,24 +1,126 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js"></script>
-<h1>{{ group.name }}</h1>
-<p>Destination: {{ group.country }}</p>
-<a href="{{ url_for('view_album', group_id=group.id) }}">View Trip Album 📷</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ group.name }} · Plait</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js"></script>
+</head>
+<body class="group-page-body">
+  <header class="group-nav">
+    <a class="group-nav-brand" href="{{ url_for('dashboard') }}">Plait</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('calendar') }}">Calendar</a>
+      <a href="{{ url_for('users') }}">Find Friends</a>
+      <a href="{{ url_for('logout') }}" class="group-logout">↪</a>
+    </nav>
+  </header>
 
-<h2>Group Chat</h2>
-<div id="chat-box" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px;">
-  {% for message in messages %}
-    <p style="{% if message.is_bot %}background: #e8f0fe; padding: 5px; border-radius: 5px;{% endif %}">
-      <strong>{{ 'Mimi 🤖' if message.is_bot else message.sender.username }}:</strong> {{ message.content }}
-      <br><small>{{ message.timestamp.strftime('%b %d, %I:%M %p') }}</small>
-    </p>
-  {% endfor %}
-</div>
+  <main class="group-page">
+    <section class="group-hero">
+      <div>
+        <p class="group-eyebrow">YOUR TRIP GROUP</p>
+        <h1>{{ group.name }}</h1>
+        <p class="group-destination">✈ {{ group.country }}</p>
+      </div>
+      <div class="group-actions">
+        <a class="group-action secondary" href="{{ url_for('view_album', group_id=group.id) }}">📷 Album</a>
+        <a class="group-action" href="{{ url_for('view_itinerary', group_id=group.id) }}">🗓 Itinerary</a>
+      </div>
+    </section>
 
-<a href="{{ url_for('view_itinerary', group_id=group.id) }}">View Trip Itinerary 🗓️</a>
+    <section class="group-layout">
+      <div class="group-chat-card">
+        <div class="group-card-heading">
+          <div>
+            <h2>Group chat</h2>
+            <p>Plan the trip together with your crew.</p>
+          </div>
+          <span class="mimi-badge">Mimi ✦</span>
+        </div>
 
-<form id="chat-form">
-  <input type="text" id="chat-input" placeholder="Type a message... (say 'mimi' to ask the assistant)" required style="width: 70%;">
-  <button type="submit">Send</button>
-</form>
+        <div id="chat-box" class="group-chat-box">
+          {% for message in messages %}
+            <div class="chat-message {% if message.is_bot %}mimi-message{% else %}member-message{% endif %}">
+              <div class="chat-message-meta">
+                <strong>{{ 'Mimi ✦' if message.is_bot else message.sender.username }}</strong>
+                <small>{{ message.timestamp.strftime('%b %d, %I:%M %p') }}</small>
+              </div>
+              <div class="chat-message-content">
+                {% if message.is_bot %}
+                  {{ message.content }}
+                {% else %}
+                  {{ message.content }}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="mimi-hint">
+          <span class="mimi-hint-icon">✦</span>
+          <div>
+            <strong>Want Mimi to help?</strong>
+            <p>type mimi in a sentence to answer</p>
+          </div>
+        </div>
+
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="Write a message to your group..." autocomplete="off" required>
+          <button type="submit">Send</button>
+        </form>
+      </div>
+
+      <aside class="group-side">
+        <section class="group-side-card">
+          <div class="side-card-heading">
+            <div>
+              <p class="side-label">THE CREW</p>
+              <h2>Members <span>{{ members|length }}</span></h2>
+            </div>
+          </div>
+          <div class="member-list">
+            {% for member in members %}
+              <div class="member-row">
+                <img src="{{ member.avatar_url() }}" alt="{{ member.username }}">
+                <div>
+                  <strong>{{ member.username }}</strong>
+                  {% if member.id == group.created_by %}<small>Group creator</small>{% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="group-side-card">
+          <p class="side-label">BRING THE CREW</p>
+          <h2>Add a friend</h2>
+          {% if addable_friends %}
+            <div class="add-friend-list">
+              {% for friend in addable_friends %}
+                <div class="add-friend-row">
+                  <img src="{{ friend.avatar_url() }}" alt="{{ friend.username }}">
+                  <span>{{ friend.username }}</span>
+                  <form action="{{ url_for('add_member', group_id=group.id) }}" method="POST">
+                    <input type="hidden" name="friend_id" value="{{ friend.id }}">
+                    <button type="submit" aria-label="Add {{ friend.username }}">+</button>
+                  </form>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="side-muted">All your friends are already in this group, or you don't have any friends yet.</p>
+          {% endif %}
+        </section>
+
+        <form class="leave-group-form" method="POST" action="{{ url_for('leave_group', group_id=group.id) }}" onsubmit="return confirm('Are you sure you want to leave this group?');">
+          <button type="submit">Leave group</button>
+        </form>
+      </aside>
+    </section>
+  </main>
 
 <script>
   const groupId = {{ group.id }};
@@ -26,17 +128,32 @@
   const chatForm = document.getElementById('chat-form');
   const chatInput = document.getElementById('chat-input');
 
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  }
+
   function loadMessages() {
     fetch(`/group/${groupId}/messages`)
       .then(response => response.json())
       .then(data => {
         chatBox.innerHTML = '';
         data.messages.forEach(msg => {
-          const p = document.createElement('p');
-          if (msg.is_bot) {
-            p.style.background = '#e8f0fe'; p.style.padding = '10px'; p.style.borderRadius = '5px';}
-          const displayContent = msg.is_bot ? marked.parse(msg.content) : msg.content;
-          p.innerHTML = `<strong>${msg.username}:</strong><br>${displayContent}<br><small>${msg.timestamp}</small>`; chatBox.appendChild(p);
+          const wrapper = document.createElement('div');
+          wrapper.className = 'chat-message ' + (msg.is_bot ? 'mimi-message' : 'member-message');
+
+          const meta = document.createElement('div');
+          meta.className = 'chat-message-meta';
+          meta.innerHTML = `<strong>${escapeHtml(msg.username)}</strong><small>${escapeHtml(msg.timestamp)}</small>`;
+
+          const content = document.createElement('div');
+          content.className = 'chat-message-content';
+          content.innerHTML = msg.is_bot ? marked.parse(msg.content) : escapeHtml(msg.content);
+
+          wrapper.appendChild(meta);
+          wrapper.appendChild(content);
+          chatBox.appendChild(wrapper);
         });
         chatBox.scrollTop = chatBox.scrollHeight;
       });
@@ -50,47 +167,15 @@
     fetch(`/group/${groupId}/send-message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `content=${encodeURIComponent(content)}`
+      body: 'content=' + encodeURIComponent(content)
     }).then(() => {
       chatInput.value = '';
       loadMessages();
     });
   });
 
-  setInterval(loadMessages, 2000);
   loadMessages();
+  setInterval(loadMessages, 2000);
 </script>
-
-<h2>Members</h2>
-<ul>
-  {% for member in members %}
-    <li>
-      <img src="{{ member.avatar_url() }}" alt="{{ member.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
-      {{ member.username }}
-    </li>
-  {% endfor %}
-</ul>
-
-<h2>Add a Friend to This Group</h2>
-{% if addable_friends %}
-  <ul>
-    {% for friend in addable_friends %}
-      <li>
-        <img src="{{ friend.avatar_url() }}" alt="{{ friend.username }}" style="vertical-align: middle; width: 32px; border-radius: 50%;">
-        {{ friend.username }}
-        <form action="{{ url_for('add_member', group_id=group.id) }}" method="POST" style="display:inline;">
-          <input type="hidden" name="friend_id" value="{{ friend.id }}">
-          <button type="submit">Add to Group</button>
-        </form>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>All your friends are already in this group, or you have no friends yet.</p>
-{% endif %}
-
-<form method="POST" action="{{ url_for('leave_group', group_id=group.id) }}" onsubmit="return confirm('Are you sure you want to leave this group?');">
-  <button type="submit">Leave Group</button>
-</form>
-
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>
