@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import re
+import uuid
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
@@ -16,11 +17,12 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this-later')
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 db = SQLAlchemy(app)
 
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-GROUP_PHOTO_FOLDER = os.path.join('static', 'group_photos')
+GROUP_PHOTO_FOLDER = os.path.join(app.root_path, 'static', 'group_photos')
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['GROUP_PHOTO_FOLDER'] = GROUP_PHOTO_FOLDER
@@ -142,6 +144,7 @@ class GroupPhoto(db.Model):
     group = db.relationship('Group', foreign_keys=[group_id], backref='photos')
     uploader = db.relationship('User', foreign_keys=[uploader_id])
 
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(GROUP_PHOTO_FOLDER, exist_ok=True)
 
@@ -243,7 +246,6 @@ def login():
 
 
 @app.route('/users')
-@login_required
 def users():
     search_query = request.args.get('search', '').strip()
 
@@ -577,15 +579,22 @@ def upload_group_photo(group_id):
 
     if not file or file.filename == '':
         flash('No file selected.')
-        return redirect(url_for('view_group', group_id=group_id))
+        return redirect(url_for('view_album', group_id=group_id))
 
     if not allowed_file(file.filename):
         flash('Invalid file type. Please upload a PNG, JPG, JPEG, or GIF.')
-        return redirect(url_for('view_group', group_id=group_id))
+        return redirect(url_for('view_album', group_id=group_id))
 
-    filename = secure_filename(f'{group_id}_{current_user.id}_{file.filename}')
+    safe_name = secure_filename(file.filename)
+    extension = safe_name.rsplit('.', 1)[1].lower()
+    filename = f'{group_id}_{current_user.id}_{uuid.uuid4().hex[:12]}.{extension}'
     filepath = os.path.join(app.config['GROUP_PHOTO_FOLDER'], filename)
-    file.save(filepath)
+
+    try:
+        file.save(filepath)
+    except OSError:
+        flash('The photo could not be saved. Please try a smaller image (under 10 MB).')
+        return redirect(url_for('view_album', group_id=group_id))
 
     new_photo = GroupPhoto(
         group_id=group_id,
@@ -608,7 +617,13 @@ def upload_group_photo(group_id):
     db.session.commit()
 
     flash('Photo added to the album!')
-    return redirect(url_for('view_group', group_id=group_id))
+    return redirect(url_for('view_album', group_id=group_id))
+
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    flash('That image is too large. Please choose a photo under 10 MB.')
+    return redirect(url_for('view_album', group_id=request.view_args.get('group_id', 1)) if request.view_args else url_for('dashboard'))
 
 
 @app.route('/group/<int:group_id>/album')
