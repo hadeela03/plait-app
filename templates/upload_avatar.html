@@ -1,14 +1,19 @@
-<h1>Upload Profile Picture</h1>
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}<p>{{ messages[0] }}</p>{% endif %}
-{% endwith %}
-
-<img src="{{ current_user.avatar_url() }}" alt="Current avatar" style="width: 100px; border-radius: 50%; display: block; margin-bottom: 10px;">
-
-<form method="POST" enctype="multipart/form-data">
-  <input type="file" name="avatar" accept="image/*" required>
-  <button type="submit">Upload</button>
-</form>
-
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+{% extends "base.html" %}
+{% block title %}Change profile picture · Plait{% endblock %}
+{% block content %}
+<main class="profile-page avatar-upload-page">
+  <a class="profile-back-link" href="{{ url_for('profile') }}">← Back to profile</a>
+  <section class="avatar-upload-card">
+    <div class="avatar-upload-art" aria-hidden="true">✦</div>
+    <img class="avatar-upload-preview" src="{{ current_user.avatar_url() }}" alt="Your current profile picture">
+    <p class="profile-eyebrow">MAKE IT YOU</p>
+    <h1>Change profile picture</h1>
+    <p class="avatar-upload-description">Choose a photo your friends will recognise. PNG, JPG, JPEG, and GIF files are supported.</p>
+    <form class="profile-form avatar-upload-form" method="POST" enctype="multipart/form-data">
+      <label for="avatar-file">Choose a picture</label>
+      <input id="avatar-file" type="file" name="avatar" accept=".png,.jpg,.jpeg,.gif,image/png,image/jpeg,image/gif" required>
+      <button class="profile-save-button" type="submit">Upload profile picture <span aria-hidden="true">↑</span></button>
+    </form>
+  </section>
+</main>
+{% endblock %}
