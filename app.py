@@ -63,6 +63,20 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    actor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    notification_type = db.Column(db.String(30), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    link = db.Column(db.String(255), nullable=True)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship('User', foreign_keys=[user_id], backref='notifications')
+    actor = db.relationship('User', foreign_keys=[actor_id])
+
+
 class FriendRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -154,11 +168,24 @@ class ItineraryDay(db.Model):
 @app.context_processor
 def inject_pending_count():
     if current_user.is_authenticated:
-        count = FriendRequest.query.filter_by(
+        count = Notification.query.filter_by(
+            user_id=current_user.id, is_read=False
+        ).count()
+        pending_requests = FriendRequest.query.filter_by(
             receiver_id=current_user.id, status='pending'
         ).count()
-        return {'pending_request_count': count}
-    return {'pending_request_count': 0}
+        return {'unread_notification_count': count, 'pending_request_count': pending_requests}
+    return {'unread_notification_count': 0, 'pending_request_count': 0}
+
+
+def create_notification(user_id, notification_type, message, actor_id=None, link=None):
+    db.session.add(Notification(
+        user_id=user_id,
+        actor_id=actor_id,
+        notification_type=notification_type,
+        message=message,
+        link=link
+    ))
 
 
 # routes
@@ -256,6 +283,9 @@ def send_friend_request(receiver_id):
 
     new_request = FriendRequest(sender_id=current_user.id, receiver_id=receiver_id)
     db.session.add(new_request)
+    create_notification(receiver_id, 'friend_request',
+                        f'{current_user.username} sent you a friend request.',
+                        actor_id=current_user.id, link=url_for('dashboard') + '#notifications')
     db.session.commit()
 
     flash('Friend request sent!')
@@ -371,6 +401,9 @@ def add_member(group_id):
 
     new_membership = Membership(user_id=friend_id, group_id=group_id)
     db.session.add(new_membership)
+    create_notification(int(friend_id), 'group_added',
+                        f'{current_user.username} added you to {group.name}.',
+                        actor_id=current_user.id, link=url_for('view_group', group_id=group_id))
     db.session.commit()
 
     flash("Friend added to the group!")
@@ -537,6 +570,17 @@ def upload_group_photo(group_id):
         caption=caption
     )
     db.session.add(new_photo)
+    member_ids = {
+        membership.user_id
+        for membership in Membership.query.filter_by(group_id=group_id).all()
+        if membership.user_id != current_user.id
+    }
+    for member_id in member_ids:
+        create_notification(
+            member_id, 'photo_added',
+            f'{current_user.username} added a new photo to {group.name}.',
+            actor_id=current_user.id, link=url_for('view_group', group_id=group_id)
+        )
     db.session.commit()
 
     flash('Photo added to the album!')
@@ -693,9 +737,23 @@ def calendar():
     )
 
 
+@app.route('/notifications/read-all', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    Notification.query.filter_by(user_id=current_user.id, is_read=False).update(
+        {'is_read': True}, synchronize_session=False
+    )
+    db.session.commit()
+    return redirect(url_for('dashboard') + '#notifications')
+
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Notification.timestamp.desc()).limit(12).all()
+
     pending_requests = FriendRequest.query.filter_by(
         receiver_id=current_user.id, status='pending'
     ).all()
@@ -710,7 +768,8 @@ def dashboard():
         'dashboard.html',
         pending_requests=pending_requests,
         friends=friends,
-        my_groups=my_groups
+        my_groups=my_groups,
+        notifications=notifications
     )
 
 
