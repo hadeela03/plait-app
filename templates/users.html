@@ -4,16 +4,14 @@
 <div class="friends-shell">
   <nav class="friends-nav">
     <a class="friends-back" href="{{ url_for('dashboard') }}">← Dashboard</a>
-    <div class="friends-logo">PLAIT</div>
+    <div class="friends-logo">Find your people</div>
     <a class="friends-avatar" href="{{ url_for('profile') }}"><img src="{{ current_user.avatar_url() }}" alt="Profile"></a>
   </nav>
 
   <main class="friends-main">
     <section class="friends-intro">
       <div>
-        <span class="friends-kicker">YOUR TRAVEL CREW</span>
-        <h1>Find your people.</h1>
-        <p>Connect with friends on Plait and make planning your next adventure a little more fun.</p>
+        <h1>Find your people</h1>
       </div>
       <div class="friends-mark">♧</div>
     </section>
@@ -64,13 +62,6 @@
         {% else %}
           <div class="friends-empty"><div class="empty-icon">⌕</div><h2>No travellers found</h2><p>Try another username and we'll help you find them.</p></div>
         {% endif %}
-      </section>
-    {% else %}
-      <section class="friends-empty friends-welcome">
-        <div class="empty-icon">✦</div>
-        <span class="friends-kicker">READY FOR THE NEXT ADVENTURE?</span>
-        <h2>Start building your travel crew</h2>
-        <p>Search for a friend above to send a request and connect on Plait.</p>
       </section>
     {% endif %}
   </main>
